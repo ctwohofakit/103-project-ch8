@@ -13,17 +13,41 @@ struct Assignment_2: View {
     "Alice" : 95,
     "Bob" : 88
 ]
-@State private var StrudentName : String = ""
-@State private var StudentGrade : Double = 0
+@State private var studentName : String = ""
+@State private var studentGrade : Double = 0
+@State private var isSorted: Bool = false
     
-    var sortedName: [(name:String,grade:Double)]{
-        studentsGrades
-            //$0 is the first item to compare
-            //$1 is the second item to compare
-            .sorted { $0.key < $1.key} // arry
-            .map {(name: $0.key, grade: $0.value)}// rename the tupple items
+    var displayList:[(name:String, grade:Double)]{
+        if isSorted{
+            return studentsGrades.sorted { $0.key < $1.key}.map {(name: $0.key, grade: $0.value)}
+        }else {
+            return studentsGrades.sorted { $0.key > $1.key}.map{(name:$0.key , grade: $0.value)}
+        }
     }
     
+    
+    //get Average
+    var averageScore: Double{
+        let values = studentsGrades.values
+        let total = values.reduce(0,+)
+        return values.isEmpty ? 0 : total / Double(values.count)
+    }
+    
+    
+    //add item
+    func addItem(){
+        let trimmedName = studentName.trimmingCharacters(in: .whitespaces)
+        
+        guard !trimmedName.isEmpty else{
+            return
+        }
+      
+        studentsGrades[trimmedName] = studentGrade
+        studentName = ""
+        studentGrade = 0
+        
+        
+    }
     
     
     
@@ -36,19 +60,14 @@ struct Assignment_2: View {
                     .foregroundColor(.brown)
                
                
-                    Text("Average Grade:")
+                Text("Average Grade: \(averageScore, specifier: "%.02f")")
                         .foregroundColor(.gray)
                         .bold()
                         
                 
                 List{
-                    
-                    ForEach(studentsGrades.keys.sorted(), id: \.self) {name in
-                        if let averageGrade = studentsGrades[name]{
-                            Text("\(name) - \(averageGrade, specifier: "%.0f")")
-                            
-                        }
-                    
+                    ForEach(Array(displayList), id: \.name){student in
+                        Text("\(student.name) - \(student.grade,  specifier: "%.0f")" )
                     
                     }
                 }
@@ -57,7 +76,7 @@ struct Assignment_2: View {
                 Spacer()
                 HStack{
                     Spacer()
-                    TextField("Name", text:$StrudentName)
+                    TextField("Name", text:$studentName)
                         .padding()
                         .frame(height: 45)
                         .overlay{
@@ -66,7 +85,7 @@ struct Assignment_2: View {
                                 .stroke(.gray.opacity(0.8), lineWidth: 1)
                             
                         }
-                    TextField("Average Grade", text:$StrudentName)
+                    TextField("Average Grade", value:$studentGrade ,format: .number)
                         .padding()
                         .frame(height: 45)
                         .overlay{
@@ -77,7 +96,7 @@ struct Assignment_2: View {
                         }
                     Button{
                         //code to add the item to the array
-                       
+                       addItem()
                         
                     }
                     label:{
@@ -95,13 +114,12 @@ struct Assignment_2: View {
                 
                 .toolbar{
                     Menu{
-                        Button("Sort A->Z"){
-
-                            let sortedA_Z = studentsGrades.sorted{$0.key < $1.key}
+                        Button("Sort A -> Z"){
+                            isSorted = true
                         }
-                        Button("Reversed Order"){
-                            //logic
-                            let sortedZ_A = studentsGrades.sorted{$0.key > $1.key}
+                        Button("Sort Z -> A"){
+                            isSorted = false
+//
 
                         }
                     } //End of Menu has to have label
