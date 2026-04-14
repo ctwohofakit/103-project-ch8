@@ -28,9 +28,9 @@ struct Assignment_2: View {
     
     //get Average
     var averageScore: Double{
-        let values = studentsGrades.values
-        let total = values.reduce(0,+)
-        return values.isEmpty ? 0 : total / Double(values.count)
+        let grade = studentsGrades.values
+        let total = grade.reduce(0,+)
+        return grade.isEmpty ? 0 : total / Double(grade.count)
     }
     
     
