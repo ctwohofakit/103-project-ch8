@@ -30,7 +30,7 @@ struct Assignment_2: View {
     var averageScore: Double{
         let grade = studentsGrades.values
         let total = grade.reduce(0,+)
-        return grade.isEmpty ? 0 : total / Double(grade.count)
+        return total / Double(grade.count)
     }
     
     
@@ -71,7 +71,7 @@ struct Assignment_2: View {
                     
                     }
                 }
-                    
+                .listStyle(.plain)
 
                 Spacer()
                 HStack{
