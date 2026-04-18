@@ -12,16 +12,17 @@ struct ShoppingListView: View {
     @State private var shoppingList:[String] = ["Eggs", "Bananas"]
     @State private var item: String = ""
     
-    
+    @State private var showAlert: Bool = false
+    @State private var duplicateAlert: Bool = false
     var body: some View {
         NavigationStack{
-
+            
             // MARK: - Main Stack
             VStack{
                 List(shoppingList, id: \.self){ listItem in
-                        Text(listItem)
-                    }
-                    
+                    Text(listItem)
+                }
+                
                 HStack{
                     TextField("Add a new shopping item...", text:$item)
                         .padding()
@@ -47,20 +48,33 @@ struct ShoppingListView: View {
                     Button("Sort A->Z"){
                         //logic
                         shoppingList = shoppingList.sorted(by: <)
-                       
+                        
                     }
                     Button("Reversed Order"){
                         //logic, getting the last action
                         shoppingList.reverse()
-                        }
-
+                    }
+                    
                 } label:{
                     Image(systemName: "arrow.up.arrow.down.circle")
                         .foregroundColor(.blue)
                         .bold()
                 }
             }//END: toolbar
-
+            
+            .alert("Invalid Item", isPresented: $showAlert){
+                Button("Ok", role: .cancel){}
+            }message:{
+                Text("We don't allow empty values")
+            }
+            
+//            .alert("duplicate", isPresented: $duplicateAlert{
+//                Button("Ok", role: .cancel){}
+//            }message:{
+//                Text("We don't allow empty values")
+//            }
+        
+            
         }//END: NavigationView
     }// END: body
     //MARK: -Function
@@ -70,11 +84,13 @@ struct ShoppingListView: View {
         
         //1. must not be empty
         guard !trimmedItem.isEmpty else{
+            showAlert = true
             return
         }
         
         //2. must not be duplicate
         guard !shoppingList.contains(trimmedItem) else{
+            duplicateAlert = true
             return
         }
         
